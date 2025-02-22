@@ -1,10 +1,12 @@
-name: 'Movie picture frontend deploy'
+name: 'Movie picture frontend ci'
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - 'main'
+    paths:
+      - 'starter/frontend/**'
 
 jobs:
   lint:
