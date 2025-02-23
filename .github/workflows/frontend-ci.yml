@@ -1,4 +1,7 @@
-name: 'Movie picture frontend ci'
+name: 'Frontend Continuous Integration'
+
+env:
+  REACT_APP_MOVIE_API_URL: 'http://localhost:5000'
 
 on:
   workflow_dispatch:
@@ -105,8 +108,11 @@ jobs:
         with:
           node-version: 18
 
-      - name: Build
-        run: |
-          cd starter/frontend/src
-          npm ci
-          npm run build
+      - name: Build docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: starter/frontend
+          build-args: |
+            REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }}
+          push: false
+          tags: "frontend:${{ github.sha }}"
