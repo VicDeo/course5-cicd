@@ -1,0 +1,87 @@
+name: 'Backend Continuous Integration'
+
+env:
+  REACT_APP_MOVIE_API_URL: 'http://localhost:5000'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'starter/backend/**'
+
+jobs:
+  lint:
+    name: 'Lint code'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+      - name: Run lint
+        run: |
+          cd starter/backend
+          pipenv install
+          pip install flake8
+          pipenv run lint
+
+  test:
+    name: 'Test code'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+      - name: Run tests 
+        run: |
+          cd starter/backend
+          pipenv install
+          pipenv run test
+
+  build:
+    name: 'Build code'
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+      - name: Build docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: starter/backend
+          push: false
+          tags: "backend:${{ github.sha }}"
