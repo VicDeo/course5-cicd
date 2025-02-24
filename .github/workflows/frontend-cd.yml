@@ -65,7 +65,7 @@ jobs:
           REPOSITORY: ${{ env.REPO_NAME }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
-          docker build --build-arg REACT_APP_MOVIE_API_URL="${{ env.REACT_APP_MOVIE_API_URL }}" -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build --build-arg REACT_APP_MOVIE_API_URL="${{ env.REACT_APP_MOVIE_API_URL }}" -t $REGISTRY/$REPOSITORY:$IMAGE_TAG starter/frontend
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Deploy to k8s cluster
