@@ -2,6 +2,8 @@ name: 'Backend Continuous Integration'
 
 env:
   REACT_APP_MOVIE_API_URL: 'http://localhost:5000'
+  REPO_NAME: 'backend'
+  IMAGE_TAG: ${{ github.sha }}
 
 on:
   workflow_dispatch:
@@ -13,51 +15,10 @@ on:
 
 jobs:
   lint:
-    name: 'Lint code'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pipenv'
-
-      - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-
-      - name: Run lint
-        run: |
-          cd starter/backend
-          pipenv install
-          pip install flake8
-          pipenv run lint
+    uses: ./.github/workflows/backend-common.yml
 
   test:
-    name: 'Test code'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pipenv'
-
-      - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-
-      - name: Run tests 
-        run: |
-          cd starter/backend
-          pipenv install
-          pipenv run test
+    uses: ./.github/workflows/backend-common.yml
 
   build:
     name: 'Build code'
@@ -84,4 +45,4 @@ jobs:
         with:
           context: starter/backend
           push: false
-          tags: "backend:${{ github.sha }}"
+          tags: "${{ env.REPO_NAME }}:${{ env.IMAGE_TAG }}"

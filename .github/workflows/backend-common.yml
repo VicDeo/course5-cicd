@@ -1,0 +1,53 @@
+
+name: 'Common backend jobs'
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: 'Lint code'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+      - name: Run lint
+        run: |
+          cd starter/backend
+          pipenv install
+          pip install flake8
+          pipenv run lint
+
+  test:
+    name: 'Test code'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+      - name: Run tests 
+        run: |
+          cd starter/backend
+          pipenv install
+          pipenv run test
