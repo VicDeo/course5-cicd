@@ -1,0 +1,71 @@
+name: "Create AWS resources for the application"
+
+env:
+  AWS_REGION: "us-east-1"
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        description: Create or destroy the infrastructure
+        options: 
+        - create
+        - destroy
+        required: true
+        default: 'create'
+
+jobs:
+  create:
+    name: "Create infrastructure"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.3.9"
+
+      - name: Deploy infrastructure
+        if: github.event.inputs.action == 'create'
+        run: |
+          cd setup/terraform
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+
+  destroy:
+    name: "Destroy infrastructure"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.3.9"
+
+      - name: Destroy infrastructure
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          cd setup/terraform
+          terraform destroy -auto-approve
