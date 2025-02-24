@@ -1,7 +1,7 @@
 name: 'Frontend Continuous Deployment'
 
 env:
-  REACT_APP_MOVIE_API_URL: 'http://localhost:5000'
+  REACT_APP_MOVIE_API_URL: 'http://a59eacfd9b4be47daa94b154d232967d-906897827.us-east-1.elb.amazonaws.com'
   REPO_NAME: 'frontend'
   IMAGE_TAG: ${{ github.sha }}
   AWS_REGION: 'us-east-1'
